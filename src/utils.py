@@ -3,6 +3,7 @@ from pathlib import Path
 from src.product import Product
 from src.category import Category
 
+
 def load_data_from_json(json_path: str) -> list[Category]:
     """
     Читает JSON-файл по указанному пути, создаёт объекты Product и Category.
@@ -43,14 +44,14 @@ def load_data_from_json(json_path: str) -> list[Category]:
                 name=prod_dict["name"],
                 description=prod_dict["description"],
                 price=float(prod_dict["price"]),
-                quantity=int(prod_dict["quantity"])
+                quantity=int(prod_dict["quantity"]),
             )
             products.append(product)
 
         category = Category(
             name=cat_dict["name"],
             description=cat_dict["description"],
-            products=products
+            products=products,
         )
         categories.append(category)
 
