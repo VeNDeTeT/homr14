@@ -39,3 +39,4 @@ def test_multiple_products_independence():
     assert p1.name != p2.name
     assert p1.price != p2.price
     assert p1.quantity != p2.quantity
+
