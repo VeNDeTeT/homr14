@@ -4,52 +4,82 @@ from src.product import Product
 class Category:
     """Класс для представления категории товаров."""
 
-    name: str
-    description: str
-    products: list
-    # Атрибуты класса для подсчета общего количества категорий и товаров
+    # Класс-атрибуты для подсчёта категорий и товаров
     category_count = 0
     product_count = 0
 
-    def __init__(self, name, description, products=None):
+    def __init__(self, name: str, description: str, products: list = None):
         """
         Инициализация категории.
 
         :param name: Название категории
         :param description: Описание категории
-        :param products: Список товаров в категории
+        :param products: Список объектов Product (по умолчанию None)
         """
         self.name = name
         self.description = description
-        self.products = products if products is not None else []
+        self.__products = []  # приватный список товаров
 
-        # Увеличиваем счетчик категорий при создании новой категории
         Category.category_count += 1
 
-        # Увеличиваем счетчик товаров на количество товаров в этой категории
-        Category.product_count += len(self.products)
+        # Добавляем переданные продукты через метод add_product
+        if products:
+            for prod in products:
+                self.add_product(prod)
+
+    def add_product(self, product: Product) -> None:
+        """
+        Добавляет объект Product в категорию.
+
+        :param product: экземпляр Product
+        :raises TypeError: если передан не Product
+        """
+        if not isinstance(product, Product):
+            raise TypeError("Можно добавлять только объекты класса Product")
+        self.__products.append(product)
+        Category.product_count += 1
+
+    @property
+    def products(self) -> list:
+        """
+        Геттер для получения списка объектов Product.
+        """
+        return self.__products
+
+    @property
+    def products_str(self) -> str:
+        """
+        Геттер для получения списка товаров в формате строк.
+
+        :return: Строка, где каждый продукт в формате:
+                 "Название продукта, {price} руб. Остаток: {quantity} шт."
+        """
+        lines = []
+        for prod in self.__products:
+            lines.append(f"{prod.name}, {prod.price} руб. Остаток: {prod.quantity} шт.")
+        return "\n".join(lines)
 
 
-# Тестируем создание объектов
 if __name__ == "__main__":
-    product1 = Product("Смартфон", "Высокотехнологичный смартфон", 50000.0, 10)
-    product2 = Product("Ноутбук", "Производительный ноутбук для работы", 80000.0, 5)
+    # Сброс счётчиков
+    Category.category_count = 0
+    Category.product_count = 0
 
-    print(
-        f"Товар 1: {product1.name}, цена: {product1.price}, количество: {product1.quantity}"
-    )
-    print(
-        f"Товар 2: {product2.name}, цена: {product2.price}, количество: {product2.quantity}"
-    )
+    # Создание товаров
+    p1 = Product("Товар1", "Описание1", 10.0, 1)
+    p2 = Product("Товар2", "Описание2", 20.0, 2)
 
-    # Создаем категории
-    category1 = Category(
-        "Электроника", "Категория электронных устройств", [product1, product2]
-    )
-    category2 = Category("Бытовая техника", "Категория бытовой техники", [])
+    # Создание категории и добавление товаров
+    cat = Category("Тест", "Проверка")
+    cat.add_product(p1)
+    cat.add_product(p2)
 
-    print(f"\nКатегория 1: {category1.name}, товаров: {len(category1.products)}")
-    print(f"Категория 2: {category2.name}, товаров: {len(category2.products)}")
+    # Проверки с выводом
+    print(f"Ожидаем категорий: 1, получено: {Category.category_count}")
+    print(f"Ожидаем товаров: 2, получено: {Category.product_count}")
 
-    print(f"\nВсего категорий: {Category.category_count}")
-    print(f"Всего товаров: {Category.product_count}")
+    expected = "Товар1, 10.0 руб. Остаток: 1 шт.\n" "Товар2, 20.0 руб. Остаток: 2 шт."
+    print("\nВывод геттера products:")
+    print(cat.products)
+    print("\nОжидаемый вывод:")
+    print(expected)
