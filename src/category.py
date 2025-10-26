@@ -59,6 +59,11 @@ class Category:
             lines.append(f"{prod.name}, {prod.price} руб. Остаток: {prod.quantity} шт.")
         return "\n".join(lines)
 
+    def __str__(self) -> str:
+        """Строковое представление категории"""
+        total_quantity = sum(product.quantity for product in self.__products)
+        return f"{self.name}, количество продуктов: {total_quantity} шт."
+
 
 if __name__ == "__main__":
     # Сброс счётчиков
