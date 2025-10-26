@@ -114,3 +114,51 @@ def test_category_attributes_types(reset_counters, sample_products):
     assert isinstance(category.products, list)
     assert isinstance(Category.category_count, int)
     assert isinstance(Category.product_count, int)
+
+@pytest.fixture(autouse=True)
+def reset_counters():
+    Category.category_count = 0
+    Category.product_count = 0
+
+def test_init_with_no_products():
+    cat = Category("Empty", "No items")
+    assert cat.name == "Empty"
+    assert cat.description == "No items"
+    assert cat.products == []                # проверяем пустой список объектов
+    assert Category.category_count == 1
+    assert Category.product_count == 0
+
+def test_init_with_products():
+    p1 = Product("A", "d", 10.0, 1)
+    p2 = Product("B", "d", 20.0, 2)
+    cat = Category("Test", "Desc", [p1, p2])
+    assert len(cat.products) == 2
+    assert Category.product_count == 2
+
+def test_add_product_and_str_output():
+    cat = Category("T", "D")
+    p = Product("X", "desc", 5.5, 3)
+    cat.add_product(p)
+    # список объктов
+    assert cat.products == [p]
+    # строковый вывод
+    expected_str = "X, 5.5 руб. Остаток: 3 шт."
+    assert cat.products_str == expected_str
+
+def test_add_product_type_error():
+    cat = Category("T", "D")
+    with pytest.raises(TypeError):
+        cat.add_product("not a product")
+
+def test_multiple_adds_and_counters():
+    cat = Category("C", "D")
+    p1 = Product("A", "d", 1.0, 1)
+    p2 = Product("B", "d", 2.0, 2)
+    cat.add_product(p1)
+    cat.add_product(p2)
+    assert Category.category_count == 1
+    assert Category.product_count == 2
+
+def test_products_str_empty():
+    cat = Category("C", "D")
+    assert cat.products_str == ""            # пустая строка при отсутствии товаров

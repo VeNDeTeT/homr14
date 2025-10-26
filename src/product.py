@@ -18,19 +18,58 @@ class Product:
         """
         self.name = name
         self.description = description
-        self.price = price
+        self.__price = price
         self.quantity = quantity
+
+    @property
+    def price(self) -> float:
+        """Геттер для приватного атрибута цены."""
+        return self.__price
+
+    @price.setter
+    def price(self, value: float) -> None:
+        """
+        Сеттер для приватного атрибута цены.
+        Проверяет, что значение положительное.
+        """
+        if value <= 0:
+            print("Цена не должна быть нулевая или отрицательная")
+        else:
+            self.__price = value
+
+    @classmethod
+    def new_product(cls, params: dict):
+        """
+        Класс-метод для создания товара из словаря params:
+        ключи 'name', 'description', 'price', 'quantity'.
+        """
+        return cls(
+            params["name"], params["description"], params["price"], params["quantity"]
+        )
 
 
 # Тестируем создание объектов
 if __name__ == "__main__":
-    # Создаем товары
-    product1 = Product("Смартфон", "Высокотехнологичный смартфон", 50000.0, 10)
-    product2 = Product("Ноутбук", "Производительный ноутбук для работы", 80000.0, 5)
+    # Простейшая проверка
 
+    # Создание через __init__
+    p1 = Product("Чайник", "Электрический чайник", 1500.0, 3)
+    print(f"{p1.name=}, {p1.description=}, {p1.price=}, {p1.quantity=}")
+
+    # Попытка установки некорректной цены
+    print("\nПроверка сеттера price:")
+    p1.price = -100.0  # должно напечатать предупреждение
+    print(f"Цена осталась: {p1.price}")
+
+    # Создание через класс-метод new_product
+    params = {
+        "name": "Тостер",
+        "description": "Двухслотовый тостер",
+        "price": 2500.0,
+        "quantity": 5,
+    }
+    p2 = Product.new_product(params)
     print(
-        f"Товар 1: {product1.name}, цена: {product1.price}, количество: {product1.quantity}"
-    )
-    print(
-        f"Товар 2: {product2.name}, цена: {product2.price}, количество: {product2.quantity}"
+        "\nnew_product создал:",
+        f"{p2.name=}, {p2.description=}, {p2.price=}, {p2.quantity=}",
     )
