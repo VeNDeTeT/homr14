@@ -58,7 +58,6 @@ class Product:
         return self.price * self.quantity + other.price * other.quantity
 
 
-
 # Тестируем создание объектов
 # if __name__ == "__main__":
 #     # Простейшая проверка
