@@ -1,5 +1,5 @@
 import pytest
-from src.product import Product
+from src.product import Product, Smartphone, LawnGrass
 from src.category import Category
 
 
@@ -220,3 +220,177 @@ def test_category_str_format():
     assert "Category" in result
     assert "8" in result  # 5+3
     assert "шт" in result
+
+
+# ===== ПРАВИЛЬНОЕ ДОБАВЛЕНИЕ =====
+
+
+def test_add_product_to_category():
+    """Добавление обычного Product"""
+    cat = Category("Техника", "D")
+    p = Product("Ноутбук", "Игровой", 75000.0, 1)
+    cat.add_product(p)
+    assert len(cat.products) == 1
+    assert cat.products[0] is p
+
+
+def test_add_smartphone_to_category():
+    """Добавление Smartphone в категорию"""
+    cat = Category("Электроника", "Техника")
+    phone = Smartphone(
+        "iPhone", "Смартфон", 100000.0, 2, "A17", "15", "256GB", "Черный"
+    )
+    cat.add_product(phone)
+    assert len(cat.products) == 1
+    assert isinstance(cat.products[0], Smartphone)
+
+
+def test_add_lawn_grass_to_category():
+    """Добавление LawnGrass в категорию"""
+    cat = Category("Сад", "Растения")
+    grass = LawnGrass("Газон", "Трава", 1000.0, 5, "РФ", "7 дней", "Зеленый")
+    cat.add_product(grass)
+    assert len(cat.products) == 1
+    assert isinstance(cat.products[0], LawnGrass)
+
+
+def test_add_mixed_products():
+    """Добавление товаров разных типов в категорию"""
+    cat = Category("Смешанные", "Разные")
+
+    p = Product("Ноутбук", "A", 75000.0, 1)
+    phone = Smartphone("iPhone", "B", 100000.0, 2, "A17", "15", "256GB", "Черный")
+    grass = LawnGrass("Газон", "C", 1000.0, 5, "РФ", "7 дней", "Зеленый")
+
+    cat.add_product(p)
+    cat.add_product(phone)
+    cat.add_product(grass)
+
+    assert len(cat.products) == 3
+    assert Category.product_count == 3
+
+
+# ===== ОШИБКИ (НЕПРАВИЛЬНОЕ ДОБАВЛЕНИЕ) =====
+
+
+def test_add_string_to_category():
+    """Ошибка: добавление строки"""
+    cat = Category("Электроника", "Техника")
+    with pytest.raises(TypeError):
+        cat.add_product("Это не продукт")
+
+
+def test_add_integer_to_category():
+    """Ошибка: добавление числа"""
+    cat = Category("Электроника", "Техника")
+    with pytest.raises(TypeError):
+        cat.add_product(123)
+
+
+def test_add_dict_to_category():
+    """Ошибка: добавление словаря"""
+    cat = Category("Электроника", "Техника")
+    with pytest.raises(TypeError):
+        cat.add_product({"name": "Test"})
+
+
+def test_add_list_to_category():
+    """Ошибка: добавление списка"""
+    cat = Category("Электроника", "Техника")
+    with pytest.raises(TypeError):
+        cat.add_product(["A", "B"])
+
+
+def test_add_none_to_category():
+    """Ошибка: добавление None"""
+    cat = Category("Электроника", "Техника")
+    with pytest.raises(TypeError):
+        cat.add_product(None)
+
+
+# ===== ПРОВЕРКА isinstance =====
+
+
+def test_isinstance_checks():
+    """Проверка работы isinstance()"""
+    p = Product("A", "B", 100, 1)
+    phone = Smartphone("A", "B", 100, 1, "A17", "15", "256GB", "Черный")
+    grass = LawnGrass("A", "B", 100, 1, "РФ", "7 дней", "Зеленый")
+
+    # Все являются Product или его наследниками
+    assert isinstance(p, Product)  # True
+    assert isinstance(phone, Product)  # True
+    assert isinstance(grass, Product)  # True
+
+    # Проверка типов наследников
+    assert isinstance(phone, Smartphone)  # True
+    assert isinstance(grass, LawnGrass)  # True
+
+    # Они не являются друг другом
+    assert not isinstance(phone, LawnGrass)  # False
+    assert not isinstance(grass, Smartphone)  # False
+
+
+def test_category_products_str_with_smartphone():
+    """Проверка products_str с Smartphone"""
+    cat = Category("Электроника", "Техника")
+    phone = Smartphone(
+        "iPhone", "Смартфон", 100000.0, 1, "A17", "15", "256GB", "Черный"
+    )
+    cat.add_product(phone)
+
+    result = cat.products_str
+    assert "iPhone" in result
+    assert "100000.0" in result
+
+
+def test_category_products_str_with_lawn_grass():
+    """Проверка products_str с LawnGrass"""
+    cat = Category("Сад", "Растения")
+    grass = LawnGrass("Газон", "Трава", 1000.0, 1, "РФ", "7 дней", "Зеленый")
+    cat.add_product(grass)
+
+    result = cat.products_str
+    assert "Газон" in result
+    assert "1000.0" in result
+
+
+def test_category_str_with_smartphone():
+    """Проверка __str__ категории со Smartphone"""
+    phone = Smartphone(
+        "iPhone", "Смартфон", 100000.0, 5, "A17", "15", "256GB", "Черный"
+    )
+    cat = Category("Электроника", "Техника", [phone])
+
+    result = str(cat)
+    assert "Электроника" in result
+    assert "5" in result
+
+
+def test_category_str_with_lawn_grass():
+    """Проверка __str__ категории с LawnGrass"""
+    grass = LawnGrass("Газон", "Трава", 1000.0, 10, "РФ", "7 дней", "Зеленый")
+    cat = Category("Сад", "Растения", [grass])
+
+    result = str(cat)
+    assert "Сад" in result
+    assert "10" in result
+
+
+def test_category_products_str_multiple_types():
+    """Проверка products_str с разными типами товаров"""
+    cat = Category("Смешанные", "Разные")
+
+    p = Product("Ноутбук", "A", 75000.0, 1)
+    phone = Smartphone("iPhone", "B", 100000.0, 1, "A17", "15", "256GB", "Черный")
+    grass = LawnGrass("Газон", "C", 1000.0, 1, "РФ", "7 дней", "Зеленый")
+
+    cat.add_product(p)
+    cat.add_product(phone)
+    cat.add_product(grass)
+
+    result = cat.products_str
+    assert "Ноутбук" in result
+    assert "iPhone" in result
+    assert "Газон" in result
+    assert result.count("\n") >= 2  # минимум 2 перевода строк

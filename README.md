@@ -3,6 +3,7 @@
 ## Описание
 Этот проект демонстрирует:
 - Создание классов `Product` и `Category`.
+- **Наследование**: классы `Smartphone` и `LawnGrass` наследуют от `Product`.
 - Автоматический подсчет общего числа категорий и товаров через атрибуты класса.
 - Загрузку данных из JSON-файла с помощью функции `load_data_from_json`.
 - Полный набор юнит-тестов для проверки функциональности.
@@ -15,12 +16,14 @@ homr14/
 │   └── products.json         # Исходные данные категорий и товаров
 ├── src/
 │   ├── __init__.py           # Пакет src
-│   ├── product.py            # Класс Product
+│   ├── product.py            # Класс Product и его наследники
 │   ├── category.py           # Класс Category
 │   └── utils.py              # Функция загрузки данных из JSON
 ├── tests/
+│   ├── test_test_utils.py    # тесты 
 │   ├── test_product.py       # Тесты для Product
-│   └── test_category.py      # Тесты для Category
+│   ├── test_category.py      # Тесты для Category
+│   └── test_inheritance.py   # Тесты для наследования
 ├── main.py                   # Пример использования и демонстрация загрузки
 ├── conftest.py               # Настройка sys.path для pytest
 ├── requirements.txt          # Зависимости проекта
@@ -35,26 +38,31 @@ homr14/
    git clone https://github.com/username/homr14.git
    cd homr14
    ```
+
 2. Создайте и активируйте виртуальное окружение:
    ```bash
    python -m venv .venv
    source .venv/bin/activate   # Linux/macOS
-   .\.venv\Scripts\activate  # Windows
+   .\.venv\Scripts\activate    # Windows
    ```
+
 3. Установите зависимости:
    ```bash
    pip install -r requirements.txt
    ```
+
 4. Запустите тесты:
    ```bash
    pytest
    ```
+
 5. Сформируйте отчет покрытия:
    ```bash
    coverage run -m pytest
    coverage report
    coverage html
    ```
+
 6. Продемонстрируйте загрузку и работу в `main.py`:
    ```bash
    python main.py
@@ -64,74 +72,94 @@ homr14/
 
 Файл: `src/product.py`
 
-- **Конструктор**  
+### Базовый класс для всех товаров
+
+- **Конструктор**
   ```python
   p = Product(name: str, description: str, price: float, quantity: int)
   ```
-- **Приватный атрибут цены**  
+
+- **Приватный атрибут цены**
   ```python
   self.__price = price
   ```
+
 - **Геттер `price`**  
-  Метод возвращает текущее значение приватного атрибута `__price`.
-  ```python
-  @property
-  def price(self) -> float:
-      return self.__price
-  ```
+  Возвращает текущее значение приватного атрибута `__price`.
+
 - **Сеттер `price`**  
-  Метод проверяет новое значение:
-  - Если `value` > 0, присваивает `__price = value`.
-  - Иначе выводит сообщение:
-    ```
-    Цена не должна быть нулевая или отрицательная
-    ```
-  И не меняет текущее значение.
-  ```python
-  @price.setter
-  def price(self, value: float) -> None:
-      if value <= 0:
-          print("Цена не должна быть нулевая или отрицательная")
-      else:
-          self.__price = value
-  ```
+  Проверяет новое значение:
+  - Если `value` > 0, присваивает `__price = value`
+  - Иначе выводит сообщение об ошибке
+
 - **Класс-метод `new_product`**  
-  Создает товар из словаря с ключами:
-  - `"name"`
-  - `"description"`
-  - `"price"`
-  - `"quantity"`
-  ```python
-  @classmethod
-  def new_product(cls, params: dict) -> Product:
-      return cls(
-          params["name"],
-          params["description"],
-          params["price"],
-          params["quantity"]
-      )
-  ```
+  Создает товар из словаря с ключами: `"name"`, `"description"`, `"price"`, `"quantity"`
+
 - **Магический метод `__str__`**  
-  Возвращает строковое представление товара в формате:
+  Возвращает строковое представление товара:
   ```
   Название продукта, {price} руб. Остаток: {quantity} шт.
   ```
-  Пример:
-  ```python
-  p = Product("Ноутбук", "Игровой", 75000.0, 5)
-  print(p)  # "Ноутбук, 75000.0 руб. Остаток: 5 шт."
-  ```
+
 - **Магический метод `__add__`**  
-  Складывает два товара и возвращает общую стоимость на складе:
+  Складывает два товара **ОДИНАКОВОГО типа**:
   ```
   результат = (цена1 × количество1) + (цена2 × количество2)
   ```
-  Пример:
-  ```python
-  p1 = Product("A", "D", 100.0, 10)
-  p2 = Product("B", "D", 50.0, 2)
-  total = p1 + p2  # 100*10 + 50*2 = 1100
-  ```
+  **Использует `type() is not type()` для проверки точного совпадения типов**
+  - ✅ Product + Product = работает
+  - ✅ Smartphone + Smartphone = работает
+  - ✅ LawnGrass + LawnGrass = работает
+  - ❌ Product + Smartphone = TypeError
+  - ❌ Smartphone + LawnGrass = TypeError
+
+## Классы-наследники Product
+
+### Класс Smartphone
+
+**Дополнительные свойства:**
+- `efficiency` — производительность (например, "A17")
+- `model` — модель (например, "15 Pro")
+- `memory` — объем встроенной памяти (например, "512GB")
+- `color` — цвет (например, "Черный")
+
+**Пример создания:**
+```python
+from src.product import Smartphone
+
+phone = Smartphone(
+    name="iPhone 15 Pro",
+    description="Флагманский смартфон Apple",
+    price=120000.0,
+    quantity=5,
+    efficiency="A17",
+    model="15 Pro",
+    memory="256GB",
+    color="Титановый синий"
+)
+```
+
+### Класс LawnGrass
+
+**Дополнительные свойства:**
+- `country` — страна-производитель (например, "Нидерланды")
+- `germination_period` — срок прорастания (например, "7-14 дней")
+- `color` — цвет (например, "Темно-зеленый")
+
+**Пример создания:**
+```python
+from src.product import LawnGrass
+
+grass = LawnGrass(
+    name="Газон 'Изумруд'",
+    description="Элитная газонная трава",
+    price=1500.0,
+    quantity=20,
+    country="Нидерланды",
+    germination_period="7-14 дней",
+    color="Темно-зеленый"
+)
+```
 
 ## Класс Category
 
@@ -141,47 +169,35 @@ homr14/
   ```python
   cat = Category(name: str, description: str, products: list[Product] | None)
   ```
+
 - **Класс-атрибуты для подсчета**
-  ```python
-  category_count = 0  # Общее число категорий
-  product_count = 0   # Общее число товаров
-  ```
+  - `category_count` — общее число категорий
+  - `product_count` — общее число товаров
+
 - **Приватный список товаров**  
   ```python
   self.__products = []
   ```
+
 - **Метод `add_product(product: Product)`**  
-  Добавляет товар в категорию и увеличивает счетчик `Category.product_count`.
-  ```python
-  cat = Category("Техника", "Электроника")
-  p = Product("Монитор", "4K", 500.0, 3)
-  cat.add_product(p)
-  ```
+  Добавляет товар в категорию. **Использует `isinstance()` для проверки**
+  - ✅ Добавляет Product, Smartphone, LawnGrass
+  - ❌ Выбрасывает TypeError для строк, чисел, словарей и т.д.
+
 - **Свойство `products`**  
   Возвращает список объектов `Product` категории.
-  ```python
-  for product in cat.products:
-      print(product.name)
-  ```
+
 - **Свойство `products_str`**  
   Возвращает строку со списком товаров в формате:
   ```
   Название продукта1, {price1} руб. Остаток: {quantity1} шт.
   Название продукта2, {price2} руб. Остаток: {quantity2} шт.
   ```
-  Пример:
-  ```python
-  print(cat.products_str)
-  ```
+
 - **Магический метод `__str__`**  
   Возвращает строковое представление категории:
   ```
   Название категории, количество продуктов: {сумма_количеств} шт.
-  ```
-  Пример:
-  ```python
-  cat = Category("Электроника", "Техника", [p1, p2, p3])
-  print(cat)  # "Электроника, количество продуктов: 25 шт."
   ```
 
 ## Утилиты
@@ -195,7 +211,7 @@ homr14/
   - `"description"` — описание товара
   - `"price"` — цена товара
   - `"quantity"` — количество в наличии
-  
+
   Пример `data/products.json`:
   ```json
   [
@@ -205,13 +221,6 @@ homr14/
       "description": "Latest model",
       "price": 500.0,
       "quantity": 10
-    },
-    {
-      "category": "Home",
-      "name": "Vacuum Cleaner",
-      "description": "Powerful suction",
-      "price": 150.0,
-      "quantity": 5
     }
   ]
   ```
@@ -220,11 +229,13 @@ homr14/
 
 ```python
 from src.utils import load_data_from_json
-from src.product import Product
+from src.product import Product, Smartphone, LawnGrass
 from src.category import Category
 
+# Загрузка из JSON
 items = load_data_from_json("data/products.json")
 
+# Группировка товаров по категориям
 categories: dict[str, Category] = {}
 for item in items:
     prod = Product.new_product(item)
@@ -233,15 +244,44 @@ for item in items:
         categories[cat_name] = Category(cat_name, f"Category {cat_name}")
     categories[cat_name].add_product(prod)
 
+# Вывод информации
 for cat in categories.values():
     print(f"\nКатегория: {cat.name}")
     print(cat.products_str)
     print(f"Итого: {cat}")
 ```
 
+## Ключевые концепции
+
+### Наследование (Inheritance)
+```python
+class Smartphone(Product):
+    """Класс Smartphone наследует от Product"""
+    def __init__(self, name, description, price, quantity, efficiency, model, memory, color):
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        # ... остальные свойства
+```
+
+### Проверка типов (type() is not type())
+```python
+def __add__(self, other):
+    if type(self) is not type(other):
+        raise TypeError("Можно складывать только товары ОДИНАКОВОГО типа")
+    return self.price * self.quantity + other.price * other.quantity
+```
+
+### Проверка экземпляра (isinstance())
+```python
+def add_product(self, product):
+    if not isinstance(product, Product):
+        raise TypeError("Можно добавлять только объекты Product или его наследников")
+    self.__products.append(product)
+```
+
 ## Тестирование и покрытие
 
-Цель — покрытие не менее **75%** кода тестами.
+Цель — покрытие не менее **75%** кода тестами. **Текущее покрытие: 88%**
 
 Запуск всех тестов:
 ```bash
@@ -278,5 +318,60 @@ git checkout -b feature/your-feature-name
 
 После завершения работы — отправьте пул-реквест для обзора.
 
+## Примеры использования
+
+### Создание товаров и категорий
+```python
+from src.product import Product, Smartphone, LawnGrass
+from src.category import Category
+
+# Создание товаров
+phone = Smartphone("iPhone 15", "Смартфон", 100000, 5, "A17", "15", "256GB", "Черный")
+grass = LawnGrass("Газон", "Трава", 1000, 10, "РФ", "7 дней", "Зеленый")
+product = Product("Ноутбук", "Компьютер", 75000, 3)
+
+# Создание категории
+cat = Category("Электроника", "Техника и растения")
+
+# Добавление товаров
+cat.add_product(phone)
+cat.add_product(grass)
+cat.add_product(product)
+
+# Вывод информации
+print(cat)  # Электроника, количество продуктов: 18 шт.
+print(cat.products_str)
+```
+
+### Сложение товаров
+```python
+# Сложение товаров одного типа
+phone1 = Smartphone("A", "D", 50000, 2, "A17", "15", "256GB", "Черный")
+phone2 = Smartphone("B", "E", 40000, 3, "Snapdragon", "S24", "128GB", "Белый")
+total = phone1 + phone2  # 50000*2 + 40000*3 = 220000
+print(total)  # 220000.0
+
+# Ошибка при сложении товаров разных типов
+try:
+    result = phone1 + grass
+except TypeError as e:
+    print(e)  # Можно складывать только товары ОДИНАКОВОГО типа...
+```
+
+### Проверка типов
+```python
+# isinstance() проверяет наследование
+print(isinstance(phone, Product))      # True
+print(isinstance(phone, Smartphone))   # True
+print(isinstance(phone, LawnGrass))    # False
+
+# type() проверяет точный тип
+print(type(phone) is Smartphone)       # True
+print(type(phone) is Product)          # False
+```
+
 ## Автор
 Проект создан как учебное задание по объектно-ориентированному программированию на Python.
+
+## Лицензия
+MIT

@@ -27,15 +27,21 @@ class Category:
             for prod in products:
                 self.add_product(prod)
 
-    def add_product(self, product: Product) -> None:
+    def add_product(self, product):
         """
-        Добавляет объект Product в категорию.
+        Добавляет товар в категорию.
+        Проверяет, что product является экземпляром Product или его наследников.
 
-        :param product: экземпляр Product
-        :raises TypeError: если передан не Product
+        :param product: Объект Product или его наследник (Smartphone, LawnGrass)
+        :raises TypeError: Если product не является Product или его наследником
         """
+        # Используем isinstance() для проверки, что это Product или его наследник
         if not isinstance(product, Product):
-            raise TypeError("Можно добавлять только объекты класса Product")
+            raise TypeError(
+                f"Можно добавлять только объекты Product или его наследников. "
+                f"Получен тип: {type(product).__name__}"
+            )
+
         self.__products.append(product)
         Category.product_count += 1
 
