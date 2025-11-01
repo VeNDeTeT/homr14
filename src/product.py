@@ -47,29 +47,93 @@ class Product:
             params["name"], params["description"], params["price"], params["quantity"]
         )
 
+    def __str__(self) -> str:
+        """Строковое представление товара"""
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
 
-# Тестируем создание объектов
-if __name__ == "__main__":
-    # Простейшая проверка
+    def __add__(self, other):
+        if type(self) is not type(other):
+            raise TypeError(
+                f"Можно складывать только товары ОДИНАКОВОГО типа. "
+                f"Попытка сложить {type(self).__name__} и {type(other).__name__} невозможно."
+            )
+        return self.price * self.quantity + other.price * other.quantity
 
-    # Создание через __init__
-    p1 = Product("Чайник", "Электрический чайник", 1500.0, 3)
-    print(f"{p1.name=}, {p1.description=}, {p1.price=}, {p1.quantity=}")
 
-    # Попытка установки некорректной цены
-    print("\nПроверка сеттера price:")
-    p1.price = -100.0  # должно напечатать предупреждение
-    print(f"Цена осталась: {p1.price}")
+# ===== КЛАССЫ-НАСЛЕДНИКИ =====
+class Smartphone(Product):
+    """Класс для представления товара 'Смартфон'."""
 
-    # Создание через класс-метод new_product
-    params = {
-        "name": "Тостер",
-        "description": "Двухслотовый тостер",
-        "price": 2500.0,
-        "quantity": 5,
-    }
-    p2 = Product.new_product(params)
-    print(
-        "\nnew_product создал:",
-        f"{p2.name=}, {p2.description=}, {p2.price=}, {p2.quantity=}",
-    )
+    def __init__(
+        self, name, description, price, quantity, efficiency, model, memory, color
+    ):
+        """Инициализация смартфона."""
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+    def __str__(self):
+        """Строковое представление смартфона."""
+        base = super().__str__()
+        return (
+            f"{base}\n"
+            f"Производительность: {self.efficiency}, "
+            f"Модель: {self.model}, "
+            f"Память: {self.memory}, "
+            f"Цвет: {self.color}"
+        )
+
+
+class LawnGrass(Product):
+    """Класс для представления товара 'Трава газонная'."""
+
+    def __init__(
+        self, name, description, price, quantity, country, germination_period, color
+    ):
+        """Инициализация газонной травы."""
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
+
+    def __str__(self):
+        """Строковое представление газонной травы."""
+        base = super().__str__()
+        return (
+            f"{base}\n"
+            f"Страна-производитель: {self.country}, "
+            f"Срок прорастания: {self.germination_period}, "
+            f"Цвет: {self.color}"
+        )
+
+
+# p = Product("A", "B", 100, 1)
+# phone = Smartphone("A", "B", 100, 1, "A17", "15", "256GB", "Черный")
+#
+# # type() возвращает точный класс объекта
+# print(type(p))  # <class 'src.product.Product'>
+# print(type(phone))  # <class 'src.smartphone.Smartphone'>
+#
+# # Сравнение типов
+# print(type(p) == type(p))  # True (одинаковые типы)
+# print(type(phone) == type(phone))  # True (одинаковые типы)
+# print(type(p) == type(phone))  # False (разные типы)
+#
+# # Это отличается от isinstance (который проверяет наследование)
+# print(isinstance(phone, Smartphone))  # True
+# print(isinstance(phone, Product))  # True (потому что Smartphone наследует Product)
+# print(type(phone) == Smartphone)  # True
+# print(type(phone) == Product)  # False (type() не смотрит на наследование)
+
+# # Смартфон + Газонная трава
+# phone = Smartphone("iPhone", "A", 100000.0, 1, "A17", "15", "256GB", "Черный")
+# grass = LawnGrass("Газон", "B", 1000.0, 1, "РФ", "7 дней", "Зеленый")
+#
+# try:
+#     total = phone + grass
+# except TypeError as e:
+#     print(e)
+#     # TypeError: Можно складывать только товары ОДИНАКОВОГО типа.
+#     # Попытка сложить Smartphone и LawnGrass
