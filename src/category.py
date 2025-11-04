@@ -69,28 +69,3 @@ class Category:
         """Строковое представление категории"""
         total_quantity = sum(product.quantity for product in self.__products)
         return f"{self.name}, количество продуктов: {total_quantity} шт."
-
-
-if __name__ == "__main__":
-    # Сброс счётчиков
-    Category.category_count = 0
-    Category.product_count = 0
-
-    # Создание товаров
-    p1 = Product("Товар1", "Описание1", 10.0, 1)
-    p2 = Product("Товар2", "Описание2", 20.0, 2)
-
-    # Создание категории и добавление товаров
-    cat = Category("Тест", "Проверка")
-    cat.add_product(p1)
-    cat.add_product(p2)
-
-    # Проверки с выводом
-    print(f"Ожидаем категорий: 1, получено: {Category.category_count}")
-    print(f"Ожидаем товаров: 2, получено: {Category.product_count}")
-
-    expected = "Товар1, 10.0 руб. Остаток: 1 шт.\n" "Товар2, 20.0 руб. Остаток: 2 шт."
-    print("\nВывод геттера products:")
-    print(cat.products)
-    print("\nОжидаемый вывод:")
-    print(expected)
