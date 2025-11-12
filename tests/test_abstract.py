@@ -47,9 +47,7 @@ def test_mixin_log_in_product(capfd):
 
 def test_mixin_log_in_smartphone(capfd):
     """Логирование при создании Smartphone"""
-    Smartphone(
-        "iPhone", "Смартфон", 100000.0, 1, "A17", "15", "256GB", "Черный"
-    )
+    Smartphone("iPhone", "Смартфон", 100000.0, 1, "A17", "15", "256GB", "Черный")
     captured = capfd.readouterr()
     assert "Smartphone" in captured.out
     assert "iPhone" in captured.out

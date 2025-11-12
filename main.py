@@ -5,56 +5,23 @@ from src.utils import load_data_from_json
 
 def main():
     """Загрузка данных из JSON и демонстрация работы классов"""
-    # Загрузка из JSON
+
+    # ===== ЧАСТЬ 1: Загрузка данных из JSON =====
+    print("=== Загрузка данных из JSON ===")
     json_path = "data/products.json"
     try:
-        categories = load_data_from_json(json_path)
-        print("=== Данные из JSON ===")
-        for cat in categories:
-            print(f"{cat.name}: {len(cat.products)} товаров")
+        items = load_data_from_json(json_path)
+        print(f"✓ Успешно загружено {len(items)} товаров из JSON\n")
     except FileNotFoundError as e:
-        print(f"Ошибка: {e}")
+        print(f"✗ Ошибка: {e}\n")
 
-    # Демонстрация создания объектов вручную
-    print("\n=== Создание объектов вручную ===")
-    product1 = Product(
-        "Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5
-    )
-    product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
-    product3 = Product("Xiaomi Redmi Note 11", "1024GB, Синий", 31000.0, 14)
+    # ===== ЧАСТЬ 2: Создание объектов вручную =====
+    print("=== Создание объектов вручную ===")
 
-    category1 = Category(
-        "Смартфоны",
-        "Смартфоны, как средство не только коммуникации, "
-        "но и получения дополнительных функций для удобства жизни",
-        [product1, product2, product3],
-    )
-
-    print(f"Категория: {category1.name}")
-    print(f"Описание: {category1.description}")
-    print(f"Количество товаров: {len(category1.products)}")
-
-    product4 = Product('55" QLED 4K', "Фоновая подсветка", 123000.0, 7)
-    category2 = Category(
-        "Телевизоры",
-        "Современный телевизор, который позволяет наслаждаться просмотром",
-        [product4],
-    )
-
-    print(f"\nКатегория: {category2.name}")
-    print(f"Количество товаров: {len(category2.products)}")
-
-    print(f"\nВсего категорий: {Category.category_count}")
-    print(f"Всего товаров: {Category.product_count}")
-
-
-if __name__ == "__main__":  # pragma: no cover
-    main()
-
-if __name__ == "__main__":
+    # Смартфоны
     smartphone1 = Smartphone(
         "Samsung Galaxy S23 Ultra",
-        "256GB, Серый цвет, 200MP камера",
+        "256GB, Серый, 200MP",
         180000.0,
         5,
         95.5,
@@ -76,41 +43,9 @@ if __name__ == "__main__":
         "Синий",
     )
 
-    print(smartphone1.name)
-    print(smartphone1.description)
-    print(smartphone1.price)
-    print(smartphone1.quantity)
-    print(smartphone1.efficiency)
-    print(smartphone1.model)
-    print(smartphone1.memory)
-    print(smartphone1.color)
-
-    print(smartphone2.name)
-    print(smartphone2.description)
-    print(smartphone2.price)
-    print(smartphone2.quantity)
-    print(smartphone2.efficiency)
-    print(smartphone2.model)
-    print(smartphone2.memory)
-    print(smartphone2.color)
-
-    print(smartphone3.name)
-    print(smartphone3.description)
-    print(smartphone3.price)
-    print(smartphone3.quantity)
-    print(smartphone3.efficiency)
-    print(smartphone3.model)
-    print(smartphone3.memory)
-    print(smartphone3.color)
-
+    # Газонная трава
     grass1 = LawnGrass(
-        "Газонная трава",
-        "Элитная трава для газона",
-        500.0,
-        20,
-        "Россия",
-        "7 дней",
-        "Зеленый",
+        "Газонная трава", "Элитная трава", 500.0, 20, "Россия", "7 дней", "Зеленый"
     )
     grass2 = LawnGrass(
         "Газонная трава 2",
@@ -122,34 +57,8 @@ if __name__ == "__main__":
         "Темно-зеленый",
     )
 
-    print(grass1.name)
-    print(grass1.description)
-    print(grass1.price)
-    print(grass1.quantity)
-    print(grass1.country)
-    print(grass1.germination_period)
-    print(grass1.color)
-
-    print(grass2.name)
-    print(grass2.description)
-    print(grass2.price)
-    print(grass2.quantity)
-    print(grass2.country)
-    print(grass2.germination_period)
-    print(grass2.color)
-
-    smartphone_sum = smartphone1 + smartphone2
-    print(smartphone_sum)
-
-    grass_sum = grass1 + grass2
-    print(grass_sum)
-
-    try:
-        invalid_sum = smartphone1 + grass1
-    except TypeError:
-        print("Возникла ошибка TypeError при попытке сложения")
-    else:
-        print("Не возникла ошибка TypeError при попытке сложения")
+    # ===== ЧАСТЬ 3: Работа с категориями =====
+    print("=== Работа с категориями ===\n")
 
     category_smartphones = Category(
         "Смартфоны", "Высокотехнологичные смартфоны", [smartphone1, smartphone2]
@@ -158,15 +67,52 @@ if __name__ == "__main__":
         "Газонная трава", "Различные виды газонной травы", [grass1, grass2]
     )
 
+    # Добавляем ещё товар в категорию смартфонов
     category_smartphones.add_product(smartphone3)
 
-    print(category_smartphones.products)
+    print(f"Категория: {category_smartphones.name}")
+    print(f"Товаров: {len(category_smartphones.products)}")
+    print(f"Средняя цена: {category_smartphones.average_price():.2f} руб.\n")
 
-    print(Category.product_count)
+    print(f"Категория: {category_grass.name}")
+    print(f"Товаров: {len(category_grass.products)}")
+    print(f"Средняя цена: {category_grass.average_price():.2f} руб.\n")
+
+    # ===== ЧАСТЬ 4: Тестирование сложения товаров =====
+    print("=== Тестирование сложения товаров ===")
+
+    sum_smartphones = smartphone1 + smartphone2
+    print(f"Сумма двух смартфонов: {sum_smartphones} руб.")
+
+    sum_grass = grass1 + grass2
+    print(f"Сумма двух газонов: {sum_grass} руб.")
+
+    # Попытка сложить разные типы
+    try:
+        smartphone1 + grass1
+    except TypeError as e:
+        print(f"✓ Ошибка при сложении разных типов: {e}\n")
+
+    # ===== ЧАСТЬ 5: Проверка добавления в категорию =====
+    print("=== Проверка добавления в категорию ===")
 
     try:
-        category_smartphones.add_product("Not a product")
-    except TypeError:
-        print("Возникла ошибка TypeError при добавлении не продукта")
-    else:
-        print("Не возникла ошибка TypeError при добавлении не продукта")
+        category_smartphones.add_product("Это не товар")
+    except TypeError as e:
+        print(f"✓ Ошибка при добавлении строки: {e}\n")
+
+    # ===== ЧАСТЬ 6: Общая статистика =====
+    print("=== Общая статистика ===")
+    print(f"Всего категорий: {Category.category_count}")
+    print(f"Всего товаров: {Category.product_count}")
+
+    # ===== ЧАСТЬ 7: Демонстрация ValueError при quantity=0 =====
+    print("\n=== Проверка ValueError при quantity=0 ===")
+    try:
+        Product("Товар с нулевым количеством", "Описание", 100.0, 0)
+    except ValueError as e:
+        print(f"✓ Ошибка при создании товара с quantity=0: {e}")
+
+
+if __name__ == "__main__":
+    main()
