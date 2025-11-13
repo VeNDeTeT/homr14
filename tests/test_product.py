@@ -82,10 +82,9 @@ def test_product_add_two_products():
 
 
 def test_product_add_with_zero_quantity():
-    """__add__ работает с нулевым количеством"""
-    p1 = Product("A", "D", 100.0, 0)
-    p2 = Product("B", "D", 50.0, 3)
-    assert p1 + p2 == 150.0
+    """__add__ не работает с нулевым количеством - вызывает ValueError"""
+    with pytest.raises(ValueError):
+        Product("A", "D", 100.0, 0)  # Теперь ожидаем ошибку
 
 
 def test_product_add_large_values():
@@ -165,6 +164,7 @@ def test_product_price_set_multiple_times():
 
 
 def test_product_with_zero_quantity():
-    """Продукт с нулевым количеством"""
-    p = Product("Mouse", "Wireless mouse", 25.0, 0)
-    assert p.quantity == 0
+    """Продукт с нулевым количеством выбрасывает ValueError"""
+    with pytest.raises(ValueError) as excinfo:
+        Product("Mouse", "Wireless mouse", 25.0, 0)
+    assert "Товар с нулевым количеством не может быть добавлен" in str(excinfo.value)

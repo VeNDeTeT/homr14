@@ -6,8 +6,6 @@ class MixinLog:
 
     def __init__(self, *args, **kwargs):
         """Логирует создание объекта"""
-        # НЕ вызываем super().__init__() здесь!
-        # Просто логируем
         if hasattr(self, "__dict__"):
             print(f"{self.__class__.__name__}({self.__repr__()})")
 
@@ -43,12 +41,16 @@ class Product(MixinLog, BaseProduct):
         :param description: Описание товара
         :param price: Цена товара
         :param quantity: Количество в наличии
+        :raises ValueError: Если quantity равно 0
         """
+        # ✅ ЗАДАНИЕ 1: Проверка на нулевое количество
+        if quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
+
         self.name = name
         self.description = description
         self.__price = price
         self.quantity = quantity
-        # Логируем ДО вызова super()
         MixinLog.__init__(self)
 
     @property

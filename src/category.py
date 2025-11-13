@@ -65,6 +65,19 @@ class Category:
             lines.append(f"{prod.name}, {prod.price} руб. Остаток: {prod.quantity} шт.")
         return "\n".join(lines)
 
+    def average_price(self) -> float:
+        """
+        Подсчитывает средний ценник всех товаров в категории.
+
+        :return: Средняя цена или 0, если товаров нет
+        """
+        try:
+            total_price = sum(product.price for product in self.__products)
+            count = len(self.__products)
+            return total_price / count
+        except ZeroDivisionError:
+            return 0
+
     def __str__(self) -> str:
         """Строковое представление категории"""
         total_quantity = sum(product.quantity for product in self.__products)
